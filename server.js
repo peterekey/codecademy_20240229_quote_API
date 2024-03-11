@@ -12,4 +12,16 @@ app.get('/api/quotes/random', (req, res, next) => {
     res.send({quote: quoteToSend})
 })
 
+app.get('/api/quotes', (req, res, next) => {
+    const quoteQuery = req.query
+    if(Object.keys(quoteQuery).length !== 0) {
+        const allQuotesFromPerson = quotes.filter(quote => quote.person === quoteQuery.person)
+        console.log(allQuotesFromPerson)
+        res.send({quotes: allQuotesFromPerson})
+    } else {
+        res.send({quotes})
+    }
+})
+
+
 app.listen(PORT, () => console.log('Listening on 4001...'))
