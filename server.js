@@ -16,12 +16,25 @@ app.get('/api/quotes', (req, res, next) => {
     const quoteQuery = req.query
     if(Object.keys(quoteQuery).length !== 0) {
         const allQuotesFromPerson = quotes.filter(quote => quote.person === quoteQuery.person)
-        console.log(allQuotesFromPerson)
         res.send({quotes: allQuotesFromPerson})
     } else {
         res.send({quotes})
     }
 })
 
+app.post('/api/quotes/', (req, res, next) => {
+    const {person, quote} = req.query
+    if (person && quote) {
+        const quoteToAdd = {
+            quote: {
+                quote: quote,
+                person: person
+            }
+        }
+        res.status(201).send(quoteToAdd)
+    } else {
+        res.status(400).send()
+    }
+})
 
 app.listen(PORT, () => console.log('Listening on 4001...'))
