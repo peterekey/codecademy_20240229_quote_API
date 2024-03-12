@@ -22,15 +22,19 @@ app.get('/api/quotes', (req, res, next) => {
     }
 })
 
-app.post('/api/quotes/', (req, res, next) => {
+app.post('/api/quotes', (req, res, next) => {
     const {person, quote} = req.query
     if (person && quote) {
+        const lastItemInArray = quotes[quotes.length - 1]
+        const lastIDInArray = lastItemInArray.id
         const quoteToAdd = {
             quote: {
+                id: lastIDInArray + 1,
                 quote: quote,
                 person: person
             }
         }
+        quotes.push(quoteToAdd.quote)
         res.status(201).send(quoteToAdd)
     } else {
         res.status(400).send()
