@@ -41,4 +41,8 @@ app.post('/api/quotes', (req, res, next) => {
     }
 })
 
+app.put('/api/quotes', (req, res, next) => {
+    
+})
+
 app.listen(PORT, () => console.log('Listening on 4001...'))

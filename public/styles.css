@@ -65,3 +65,7 @@ button:hover {
 .quote-text {
   font-style: italic;
 }
+
+input {
+  width: 100%;
+}

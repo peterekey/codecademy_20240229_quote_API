@@ -5,9 +5,11 @@ const fetchByAuthorButton = document.getElementById('fetch-by-author');
 const quoteContainer = document.getElementById('quote-container');
 const quoteText = document.querySelector('.quote');
 const attributionText = document.querySelector('.attribution');
+let singleQuotes = [];
 
 const resetQuotes = () => {
   quoteContainer.innerHTML = '';
+  singleQuotes = [];
 }
 
 const renderError = response => {
@@ -23,9 +25,13 @@ const renderQuotes = (quotes = []) => {
       const newQuote = document.createElement('div');
       newQuote.className = 'single-quote';
       newQuote.innerHTML = `<div class="quote-text">${quote.quote}</div>
-      <div class="attribution">- ${quote.person}</div>`;
+      <div class="attribution">- ${quote.person}</div>
+      <button onclick="editQuote(event)"><i>Edit this quote</i></button>
+      `;
       quoteContainer.appendChild(newQuote);
     });
+    singleQuotes = document.querySelectorAll('.single-quote');
+    console.log(singleQuotes)
   } else {
     quoteContainer.innerHTML = '<p>Your request returned no quotes.</p>';
   }
@@ -73,3 +79,25 @@ fetchByAuthorButton.addEventListener('click', () => {
     renderQuotes(response.quotes);
   });
 });
+
+const editQuote = (e) => {
+  const button = e.currentTarget
+  button.style.display = "none"
+  const quoteContainer = button.closest(".single-quote")
+  const quoteDiv = quoteContainer.querySelector(".quote-text")
+  const personDiv = quoteContainer.querySelector(".attribution")
+
+  const quoteText = quoteDiv.innerText
+  const personText = personDiv.innerText
+
+  quoteDiv.innerHTML = `<input type="text" id="quote-text" name="quote-text" value="${quoteText}"></input>`
+  personDiv.innerHTML = `<input type="text" id="attribution" name="attribution" value="${personText}"></input>`
+
+  const submitButton = document.createElement("button")
+  submitButton.setAttribute("type", "submit")
+  submitButton.textContent = "Submit"
+  quoteContainer.appendChild(submitButton)
+
+  console.log(quoteDiv)
+  console.log(personDiv)
+  }
