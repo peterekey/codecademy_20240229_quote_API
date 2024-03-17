@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json())
 
 const { quotes } = require('./data');
 const { getRandomElement } = require('./utils');
@@ -41,8 +42,18 @@ app.post('/api/quotes', (req, res, next) => {
     }
 })
 
-app.put('/api/quotes', (req, res, next) => {
-    
+app.put('/api/quotes/:id', (req, res, next) => {
+    const {id} = req.params
+    const quoteToUpdate = quotes.find(quote => quote.id.toString() === id)
+    if (quoteToUpdate) {
+        if (quoteToUpdate) {
+            quoteToUpdate.quote = req.body.quote
+            quoteToUpdate.person = req.body.person
+            res.send(quoteToUpdate)
+        }
+    } else {
+        res.status(404).send({message: "Quote not found"})
+    }
 })
 
 app.listen(PORT, () => console.log('Listening on 4001...'))
