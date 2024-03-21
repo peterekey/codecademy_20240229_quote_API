@@ -39,7 +39,8 @@ const renderQuoteAndPerson = (quote) => {
   quoteDetails.className = "text-and-attribution"
   quoteDetails.innerHTML = `<div class="quote-text">${quote.quote}</div>
   <div class="attribution">- ${quote.person}</div>
-  <button class="edit-quote" onclick="editQuote(event)"><i>Edit this quote</i></button>
+  <button class="edit-quote" onclick="editQuote(event)"><i>Edit</i></button>
+  <button class="delete-quote" onclick="handleDelete(event)"><i>Delete</i></button>
   `;
   return quoteDetails
 }
@@ -88,11 +89,13 @@ fetchByAuthorButton.addEventListener('click', () => {
 });
 
 const editQuote = (e) => {
-  const button = e.currentTarget
-  button.style.display = "none"
-  const singleQuote = button.closest(".single-quote")
+  const editButton = e.currentTarget
+  editButton.style.display = "none"
+  const singleQuote = editButton.closest(".single-quote")
   const quoteDiv = singleQuote.querySelector(".quote-text")
   const personDiv = singleQuote.querySelector(".attribution")
+  const deleteButton = singleQuote.querySelector(".delete-quote")
+  deleteButton.style.display = "none"
 
   const quoteText = quoteDiv.innerText
   const personText = personDiv.innerText.slice(2)
@@ -137,17 +140,39 @@ const handleEditAPI = async (quoteDetails, singleQuote) => {
     console.error('Fetch error:' + error)
     renderError(error)
   }
+}
 
+const handleDeleteAPI = async(id, singleQuote) => {
+  try {
+    const response = await fetch(`/api/quotes/${id}`, {method: "DELETE"})
+    if (response.ok) {
+      singleQuote.remove()
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
 
+const getDetails = (singleQuote, details) => {
+  const id = singleQuote.id
+
+  if (details === "all") {
+    const quoteInput = singleQuote.querySelector(`#quote-text-input-${singleQuote.id}`)
+    const personInput = singleQuote.querySelector(`#attribution-input-${singleQuote.id}`)
+  
+    const newQuote = quoteInput.value
+    const newPerson = personInput.value
+
+  
+    return {id, newQuote, newPerson}
+  } else {
+    return {id}
+  }
 }
 
 const handleSubmit = (e, singleQuote) => {
-  const quoteInput = singleQuote.querySelector(`#quote-text-input-${singleQuote.id}`)
-  const personInput = singleQuote.querySelector(`#attribution-input-${singleQuote.id}`)
 
-  const newQuote = quoteInput.value
-  const newPerson = personInput.value
-  const id = singleQuote.id
+  const {id, newQuote, newPerson} = getDetails(singleQuote, "all")
 
   const quoteDetails = {
     id: id,
@@ -155,4 +180,14 @@ const handleSubmit = (e, singleQuote) => {
     person: newPerson
   }
   handleEditAPI(quoteDetails, singleQuote)
+}
+
+const handleDelete = (e) => {
+  const button = e.currentTarget
+  const singleQuote = button.closest(".single-quote")
+  const {id} = getDetails(singleQuote)
+  console.log(button)
+  console.log(singleQuote)
+  console.log(id)
+  handleDeleteAPI(id, singleQuote)
 }

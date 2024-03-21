@@ -44,15 +44,25 @@ app.post('/api/quotes', (req, res, next) => {
 
 app.put('/api/quotes/:id', (req, res, next) => {
     const {id} = req.params
-    const quoteToUpdate = quotes.find(quote => quote.id.toString() === id)
+    const quoteToUpdate = quotes.find(quote => quote.id === Number(id))
     if (quoteToUpdate) {
-        if (quoteToUpdate) {
-            quoteToUpdate.quote = req.body.quote
-            quoteToUpdate.person = req.body.person
-            res.send(quoteToUpdate)
-        }
+        quoteToUpdate.quote = req.body.quote
+        quoteToUpdate.person = req.body.person
+        res.send(quoteToUpdate)
     } else {
         res.status(404).send({message: "Quote not found"})
+    }
+})
+
+app.delete('/api/quotes/:id', (req, res, next) => {
+    const {id} = req.params
+    const index = quotes.findIndex(quote => quote.id === Number(id))
+    if (index !== -1) {
+        quotes.splice(index, 1)
+        res.status(204).send()
+    } else {
+        console.log('did not find')
+        res.status(404).send()
     }
 })
 
