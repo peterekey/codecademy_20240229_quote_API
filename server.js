@@ -24,7 +24,7 @@ app.get('/api/quotes', (req, res, next) => {
 })
 
 app.post('/api/quotes', (req, res, next) => {
-    const {person, quote} = req.query
+    const {person, quote, year} = req.query
     if (person && quote) {
         const lastItemInArray = quotes[quotes.length - 1]
         const lastIDInArray = lastItemInArray.id
@@ -32,7 +32,8 @@ app.post('/api/quotes', (req, res, next) => {
             quote: {
                 id: lastIDInArray + 1,
                 quote: quote,
-                person: person
+                person: person,
+                year: year
             }
         }
         quotes.push(quoteToAdd.quote)
@@ -48,6 +49,7 @@ app.put('/api/quotes/:id', (req, res, next) => {
     if (quoteToUpdate) {
         quoteToUpdate.quote = req.body.quote
         quoteToUpdate.person = req.body.person
+        quoteToUpdate.year = req.body.year
         res.send(quoteToUpdate)
     } else {
         res.status(404).send({message: "Quote not found"})

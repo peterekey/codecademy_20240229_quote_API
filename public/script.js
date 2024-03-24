@@ -38,7 +38,10 @@ const renderQuoteAndPerson = (quote) => {
   const quoteDetails = document.createElement("div")
   quoteDetails.className = "text-and-attribution"
   quoteDetails.innerHTML = `<div class="quote-text">${quote.quote}</div>
-  <div class="attribution">- ${quote.person}</div>
+  <div class="attribution">
+    <span class="attribution-person">- ${quote.person}</span>
+    <span class="attribution-year">(${quote.year})</span>
+    </div>
   <button class="edit-quote" onclick="editQuote(event)"><i>Edit</i></button>
   <button class="delete-quote" onclick="handleDelete(event)"><i>Delete</i></button>
   `;
@@ -93,15 +96,22 @@ const editQuote = (e) => {
   editButton.style.display = "none"
   const singleQuote = editButton.closest(".single-quote")
   const quoteDiv = singleQuote.querySelector(".quote-text")
-  const personDiv = singleQuote.querySelector(".attribution")
+  const attributionDiv = singleQuote.querySelector(".attribution")
+  const personSpan = singleQuote.querySelector(".attribution-person")
+  const yearSpan = singleQuote.querySelector(".attribution-year")
+  
   const deleteButton = singleQuote.querySelector(".delete-quote")
   deleteButton.style.display = "none"
 
   const quoteText = quoteDiv.innerText
-  const personText = personDiv.innerText.slice(2)
+  const personText = personSpan.innerText.slice(2)
+  const yearText = yearSpan.innerText.slice(1,5)
 
   quoteDiv.innerHTML = `<input type="text" id="quote-text-input-${singleQuote.id}" name="quote-text" value="${quoteText}"></input>`
-  personDiv.innerHTML = `<input type="text" id="attribution-input-${singleQuote.id}" name="attribution" value="${personText}"></input>`
+  attributionDiv.innerHTML = `
+    <input type="text" id="attribution-person-input-${singleQuote.id}" name="attribution-person" value="${personText}"></input>
+    <input type="text" id="attribution-year-input-${singleQuote.id}" name="attribution-person" value="${yearText}"></input>
+  `
 
   const submitButton = document.createElement("button")
   submitButton.className = "submit-change"
@@ -121,7 +131,8 @@ const handleEditAPI = async (quoteDetails, singleQuote) => {
       },
       body: JSON.stringify({
         quote: quoteDetails.quote,
-        person: quoteDetails.person
+        person: quoteDetails.person,
+        year: quoteDetails.year
       })
     })
 
@@ -158,13 +169,15 @@ const getDetails = (singleQuote, details) => {
 
   if (details === "all") {
     const quoteInput = singleQuote.querySelector(`#quote-text-input-${singleQuote.id}`)
-    const personInput = singleQuote.querySelector(`#attribution-input-${singleQuote.id}`)
+    const personInput = singleQuote.querySelector(`#attribution-person-input-${singleQuote.id}`)
+    const yearInput = singleQuote.querySelector(`#attribution-year-input-${singleQuote.id}`)
   
     const newQuote = quoteInput.value
     const newPerson = personInput.value
+    const newYear = yearInput.value
 
   
-    return {id, newQuote, newPerson}
+    return {id, newQuote, newPerson, newYear}
   } else {
     return {id}
   }
@@ -172,12 +185,13 @@ const getDetails = (singleQuote, details) => {
 
 const handleSubmit = (e, singleQuote) => {
 
-  const {id, newQuote, newPerson} = getDetails(singleQuote, "all")
+  const {id, newQuote, newPerson, newYear} = getDetails(singleQuote, "all")
 
   const quoteDetails = {
     id: id,
     quote: newQuote,
-    person: newPerson
+    person: newPerson,
+    year: newYear
   }
   handleEditAPI(quoteDetails, singleQuote)
 }
@@ -186,8 +200,5 @@ const handleDelete = (e) => {
   const button = e.currentTarget
   const singleQuote = button.closest(".single-quote")
   const {id} = getDetails(singleQuote)
-  console.log(button)
-  console.log(singleQuote)
-  console.log(id)
   handleDeleteAPI(id, singleQuote)
 }
