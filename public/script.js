@@ -59,7 +59,7 @@ fetchAllButton.addEventListener('click', () => {
   })
   .then(response => {
     renderQuotes(response.quotes);
-  });
+  })
 });
 
 fetchRandomButton.addEventListener('click', () => {
@@ -88,6 +88,23 @@ fetchByAuthorButton.addEventListener('click', () => {
   })
   .then(response => {
     renderQuotes(response.quotes);
+    return fetch(`/api/bios?person=${author}`);
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json()
+    } else {
+      renderError(response)
+    }
+  })
+  .then(response => {
+    console.log(response)
+    const bioDiv = document.createElement('div')
+    bioDiv.className = 'bio'
+    bioDiv.innerHTML = response.bio + '<hr>'
+
+    const quoteContainer = document.getElementById("quote-container");
+    quoteContainer.insertBefore(bioDiv, quoteContainer.firstChild)
   });
 });
 
